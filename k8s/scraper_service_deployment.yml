@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraper-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scraper-service
+  template:
+    metadata:
+      labels:
+        app: scraper-service
+    spec:
+      containers:
+        - name: scraper-service
+          image: femioyebisi/scraper_service:1.0
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 9095
+              protocol: TCP
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: scraper-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: scraper-service
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+      nodePort: 31600
+    - name: metrics
+      port: 9095
+      targetPort: 9095
+      protocol: TCP
+      nodePort: 31500
